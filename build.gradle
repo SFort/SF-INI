@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'tf.ssf.sfort.ini'
+version '1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+publishing {
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
+    repositories {
+        maven {
+            url "file://${System.getProperty("user.dir")}/publish"
+        }
+    }
+}
