@@ -44,7 +44,11 @@ public class SFIni {
 		if (val == null || val.isEmpty()) return null;
 		return val.get(val.size()-1).val;
 	}
-
+	public Data getLastData(String key) {
+		List<Data> val = data.get(key);
+		if (val == null || val.isEmpty()) return null;
+		return val.get(val.size()-1);
+	}
 	public int getInt(String key) throws IllegalArgumentException {
 		try {
 			return Integer.parseInt(getLast(key));
@@ -95,18 +99,26 @@ public class SFIni {
 
 	public void writeToStringConsumer(Consumer<String> consumer) {
 		for (Map.Entry<String, List<Data>> en : data.entrySet()) {
-			for (Data v : en.getValue()) {
-				for (String com : v.comments) {
-					consumer.accept(";");
-					consumer.accept(com);
-					consumer.accept("\r\n");
-				}
-				consumer.accept(en.getKey());
-				consumer.accept("=");
-				consumer.accept(v.val);
+			List<Data> list = en.getValue();
+			if (list.isEmpty()) continue;
+			writeDataToStringConsumer(en.getKey(), list.get(0), consumer);
+			for (int i=1, size=list.size(); i<size; i++) {
+				writeDataToStringConsumer(".", list.get(i), consumer);
+			}
+		}
+	}
+	public static void writeDataToStringConsumer(String key, Data data, Consumer<String> consumer) {
+		if (data.comments != null) {
+			for (String com : data.comments) {
+				consumer.accept(";");
+				consumer.accept(com);
 				consumer.accept("\r\n");
 			}
 		}
+		consumer.accept(key);
+		consumer.accept("=");
+		consumer.accept(data.val);
+		consumer.accept("\r\n");
 	}
 
 	public void load(String s) {
@@ -145,7 +157,9 @@ public class SFIni {
 			String trunc = line.trim();
 			if (trunc.startsWith(";")) {
 				lineNum++;
-				seqComments.add(trunc);
+				if (trunc.length() > 1) {
+					seqComments.add(trunc.substring(1));
+				}
 				continue;
 			}
 			if (trunc.isEmpty()) {
