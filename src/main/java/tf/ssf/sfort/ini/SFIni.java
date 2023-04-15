@@ -71,7 +71,7 @@ public class SFIni {
 		switch (val.toLowerCase(Locale.ROOT)) {
 			case "1": case "true": return true;
 			case "0": case "false": return false;
-			default: throw new IllegalArgumentException("Failed to parse as bool (key: \"+key+\") valid values: true, false, 1, 0");
+			default: throw new IllegalArgumentException("Failed to parse as bool (key: "+key+") valid values: true, false, 1, 0");
 		}
 	}
 
